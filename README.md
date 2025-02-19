@@ -97,5 +97,3 @@ MY_SECRET_KEY = os.environ.get('MY_SECRET_KEY')
 This project is **open-source** and available under the **MIT License**.
 
 ---
-
-This README should provide a solid foundation for your GitHub repository! 🚀 Let me know if you'd like any modifications.
