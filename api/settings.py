@@ -20,12 +20,29 @@ import os
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+try:
+    from decouple import config
+    USE_DECOUPLE = True  # Flag to indicate we're using `decouple`
+except ImportError:
+    USE_DECOUPLE = False  # If `decouple` is not installed, fallback to `os.environ`
 
+# Determine if running on Vercel
+IS_VERCEL = os.environ.get('VERCEL') is not None
+# NOTE: you do not need to manually add VERCEL to the environment variables in the Vercel dashboard.
+#  Vercel automatically sets the VERCEL environment variable in its deployment environment.
+#  This means that when your Django app runs on Vercel, os.environ.get('VERCEL') will return a value (e.g., "1"),
+#  making IS_VERCEL = True.
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG')
+# Function to get environment variables
+def get_env_var(var_name, default=None):
+    """Fetch environment variable using `decouple` when local, or `os.environ` when on Vercel."""
+    if USE_DECOUPLE and not IS_VERCEL:
+        return config(var_name, default=default)
+    return os.environ.get(var_name, default)
+
+# Load environment variables
+SECRET_KEY = get_env_var('SECRET_KEY', 'fallback-secret-key')
+DEBUG = get_env_var('DEBUG', 'False') == 'True'
 
 
 ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
